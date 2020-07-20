@@ -18,7 +18,6 @@ io.on("connection", socket => {
     socket.on("sendMessage", data => {
 
         //emit envia so pro socket que conectou
-
         messages.push(data)
         socket.broadcast.emit("receivedMessage", data) //envia para todos os sockets conectados
     })
