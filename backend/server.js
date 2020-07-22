@@ -6,7 +6,7 @@ const server = require("http").createServer(app)
 const io = require("socket.io")(server)
 
 const knex = require("./database/connection")
-
+require("dotenv/config")
 
 
 io.on("connection", async socket => {
@@ -16,14 +16,14 @@ io.on("connection", async socket => {
 
     socket.on("sendMessage", async data => {
         //emit envia so pro socket que conectou
-        await knex("messages").insert(data)
+        const message = await knex("messages").insert(data).returning("*")
 
-        
-        socket.broadcast.emit("receivedMessage", data) //envia para todos os sockets conectados
+
+        socket.broadcast.emit("receivedMessage", message) //envia para todos os sockets conectados
     })
 })
 
 
-server.listen(3333, function(){
+server.listen(process.env.PORT, function(){
     console.log("Servidor Rodando")
 })

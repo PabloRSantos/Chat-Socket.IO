@@ -1,13 +1,12 @@
-//const knexfile = require("../../knexfile")
 const knex = require("knex")
-//require("dotenv/config")
+require("dotenv/config")
 
 const connection = knex({
-    client: 'pg',
+    client: process.env.CLIENT_DB,
   connection: {
-    user : 'postgres',
-    password : 'prs100502',
-    database : 'chat'
+    user : process.env.USER_DB,
+    password : process.env.PASSWORD_DB,
+    database : process.env.DATABASE
   }
 })
 
