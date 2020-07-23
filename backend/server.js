@@ -18,8 +18,7 @@ io.on("connection", async socket => {
         //emit envia so pro socket que conectou
         const message = await knex("messages").insert(data).returning("*")
 
-
-        socket.broadcast.emit("receivedMessage", message) //envia para todos os sockets conectados
+        socket.emit("receivedMessage", message) //envia para todos os sockets conectados
     })
 })
 

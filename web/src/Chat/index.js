@@ -1,18 +1,33 @@
 import React, {useState, useEffect} from 'react';
 import io from "socket.io-client"
-import { Container } from './style';
+import { Container, Item } from './style';
 
 
-const socket = io("http://localhost:3333")
+const socket = io("https://chatsocket-backend.herokuapp.com/")
 socket.on("connection")
 
 
 const Chat = () => {
     const [message, setMessage] = useState("")
     const [messages, setMessages] = useState([])
+    const [userId, setUserId] = useState()
+
 
     socket.on("previousMessages", msg => setMessages(msg))
-    socket.on("receivedMessage", newMessage => setMessages([...messages, newMessage]))
+    socket.on("receivedMessage", newMessage => setMessages([...messages, newMessage[0]]))
+
+
+    useEffect(() => {
+        let id = localStorage.getItem("@chat_id")
+
+        if(id === null) {
+            const value = Math.random() * (1000 - 1) + 1
+            id = localStorage.setItem("@chat_id", value)
+        }
+
+        setUserId(id)
+
+    }, [])
 
     function handleInput(event){
         setMessage(event.target.value) //yarn uuid
@@ -21,22 +36,26 @@ const Chat = () => {
     function submitForm(){
         if(message.trim()){
             socket.emit("sendMessage", {
-                id: 1,
-                message
+                text: message,
+                userId
             })
-            
-            setMessages([...messages, {id: 1, message}])
+            setMessages([...messages, {text: message, userId}])
             setMessage("")
+
+
         }
     }
 
   return (
-      <Container>
-          <input type="text" placeholder="Seu nome"/>
+      <Container >
           <div name="message" id="message">
               <ul>
-                    {messages.map((msg, index) => (
-                        <li key={index}>{msg.message}</li>
+                    {messages.map((msg) => (
+                        <Item
+                         key={msg.id || msg.userId + (Math.random() * (1000 - 1) + 1)}
+                         userId={msg.userId === userId ? true : false}>
+                             {msg.text}
+                        </Item>
                     ))}
               </ul>
           </div>
